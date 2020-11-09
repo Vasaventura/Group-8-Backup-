@@ -53,7 +53,7 @@ pygame.display.set_caption('Dodger')
 pygame.mouse.set_visible(False)
 
 # Set up the fonts.
-font = pygame.font.SysFont(None, 48)
+font = pygame.font.SysFont(None, 48, bold=True)
 
 # Set up sounds.
 gameOverSound = pygame.mixer.Sound('grinch_gameoversound.mp3')
@@ -66,10 +66,10 @@ musicPlaying = True
 playerImage = pygame.image.load('santa-player.png')
 playerRect = playerImage.get_rect()
 playerStretchedImage = pygame.transform.scale(playerImage, (10, 10))
-baddieImage = pygame.image.load('gremlin.png')
+baddieImage = pygame.image.load('gremlin_baddie.png')
 
 
-gameBackground1 = pygame.image.load("winter_background.png")
+gameBackground = pygame.image.load("winter_background.png")
 gameOverBackground = pygame.image.load("Grinch end game.png")
 
 # Show the "Start" screen.
@@ -90,8 +90,22 @@ while True:
     reverseCheat = slowCheat = False
     baddieAddCounter = 0
     pygame.mixer.music.play(-1, 0.0)
+    #class GameLevel():
+      #  def __init__(self, level, background, baddie):
+       #     self.level = level
+       #     self.background = pygame.image.load(background)
+       #     self.gameBackground=windowSurface.blit(background, (0, 0))
+        #    self.baddie = pygame.image.load(baddie)
 
+
+
+
+    #level1 = GameLevel(1, "Grinch end game.png", 'gremlin_baddie.png')
+    #level2=GameLevel(2, "night_sky.png", "bonlutin.png")
     while True:  # The game loop runs while the game part is playing.
+
+
+
         score += 1  # Increase score.
 
         for event in pygame.event.get():
@@ -169,24 +183,24 @@ while True:
         if moveDown and playerRect.bottom < WINDOWHEIGHT:
             playerRect.move_ip(0, PLAYERMOVERATE)
 
-        # Move the baddies down.
+        # Move the baddies to the left.
         for b in baddies:
             if not reverseCheat and not slowCheat:
                 b['rect'].move_ip(0, b['speed'])
             elif reverseCheat:
-                b['rect'].move_ip(0, -5)
+                b['rect'].move_ip(5, 0)
             elif slowCheat:
-                b['rect'].move_ip(0, 1)
+                b['rect'].move_ip(-1, 0)
 
-        # Delete baddies that have fallen past the bottom.
+        # Delete baddies that have come from the right.
         for b in baddies[:]:
-            if b['rect'].top > WINDOWHEIGHT:
+            if b['rect'].left > WINDOWWIDTH:
                 baddies.remove(b)
 
         # Draw the game world on the window.
         windowSurface.fill(BACKGROUNDCOLOR)
         #Set up the background
-        windowSurface.blit(gameBackground1, (0, -100))
+        windowSurface.blit(gameBackground, (0, -100))
         # Draw the score and top score.
         drawText('Score: %s' % (score), font, windowSurface, 10, 0)
         drawText('Top Score: %s' % (topScore), font, windowSurface, 10, 40)
