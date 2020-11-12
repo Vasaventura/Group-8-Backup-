@@ -3,16 +3,18 @@ from pygame.locals import *
 
 WINDOWWIDTH = 800
 WINDOWHEIGHT = 800
-TEXTCOLOR = (0, 0, 0)
+WIN = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
+TEXTCOLOR = ('white')
 BACKGROUNDCOLOR = (255, 255, 255)
 MENUBACKGROUNDCOLOR = ('red')
+# MenuGameBackground = pygame.image.load("snow.gif") #si vous voulez
 FPS = 60
-BADDIEMINSIZE = 25 #ici le code a été modifié en suivant les conseils du livre (Ai Swegart) Ch. 20, Pg. 353-354
-BADDIEMAXSIZE = 60
+BADDIEMINSIZE = 25  # ici le code a été modifié en suivant les conseils du livre (Ai Swegart) Ch. 20, Pg. 353-354
+BADDIEMAXSIZE = 60  # la taille max de baddie
 BADDIEMINSPEED = 1  # la vitesse minimale d'ennemi
 BADDIEMAXSPEED = 4  # la vitesse maximale d'ennemi
 ADDNEWBADDIERATE = 12  # le taux de reproduction de nouveaux ennemis
-PLAYERMOVERATE = 5
+PLAYERMOVERATE = 5  # la vitesse de déplacement de jouer
 
 
 def terminate():
@@ -37,6 +39,14 @@ def playerHasHitBaddie(playerRect, baddies):
             return True
     return False
 
+
+# def playerHasHitLutin(playerRect, lutin):    #utile pour la collecte des lutins
+#    for l in lutins:
+#        if playerRect.colliderect(l['rect']):
+#           baddies.remove(l)
+#            scoreLutin += 1
+#            return True
+#    return False
 
 def drawText(text, font, surface, x, y):
     textobj = font.render(text, 1, TEXTCOLOR)
@@ -63,11 +73,11 @@ pygame.mixer.music.load('KatyPerry-CozyLittleChristmas.mp3')
 musicPlaying = True
 
 # Set up images.
+# LIVES = pygame.image.load('hp.png')
 playerImage = pygame.image.load('santa-player.png')
+# playerSize=pygame.transform.scale(playerImage, (10,80))
 playerRect = playerImage.get_rect()
-playerStretchedImage = pygame.transform.scale(playerImage, (10, 10))
 baddieImage = pygame.image.load('gremlin_baddie.png')
-
 
 gameBackground = pygame.image.load("winter_background.png")
 gameOverBackground = pygame.image.load("Grinch end game.png")
@@ -75,39 +85,35 @@ gameOverBackground = pygame.image.load("Grinch end game.png")
 # Show the "Start" screen.
 windowSurface.fill(MENUBACKGROUNDCOLOR)
 drawText('X-Mas Dodger', font, windowSurface, (WINDOWWIDTH / 3), (WINDOWHEIGHT / 3))
-drawText('Press a key to start', font, windowSurface, (WINDOWWIDTH / 3)-40, (WINDOWHEIGHT / 3) + 50)
-drawText('saving Christmas', font, windowSurface, (WINDOWWIDTH / 3)-35, (WINDOWHEIGHT / 3) + 100)
+drawText('Press a key to start', font, windowSurface, (WINDOWWIDTH / 3) - 40, (WINDOWHEIGHT / 3) + 50)
+drawText('saving Christmas', font, windowSurface, (WINDOWWIDTH / 3) - 35, (WINDOWHEIGHT / 3) + 100)
 pygame.display.update()
 waitForPlayerToPressKey()
+pygame.display.flip()
 
 topScore = 0
 while True:
     # Set up the start of the game.
     baddies = []
     score = 0
-    playerRect.topleft = (WINDOWWIDTH / 2, WINDOWHEIGHT - 50)
+    lives = 3  # The number of lives at the start of the game
+    playerRect.topleft = (WINDOWWIDTH / 2, WINDOWHEIGHT - 80)
     moveLeft = moveRight = moveUp = moveDown = False
     reverseCheat = slowCheat = False
-    baddieAddCounter = 0
+    baddieAddCounter = 0  # ajout de baddies verticalement
     pygame.mixer.music.play(-1, 0.0)
-    #class GameLevel():
-      #  def __init__(self, level, background, baddie):
-       #     self.level = level
-       #     self.background = pygame.image.load(background)
-       #     self.gameBackground=windowSurface.blit(background, (0, 0))
-        #    self.baddie = pygame.image.load(baddie)
+    # class GameLevel():
+    #  def __init__(self, level, background, baddie):
+    #     self.level = level
+    #     self.background = pygame.image.load(background)
+    #     self.gameBackground=windowSurface.blit(background, (0, 0))
+    #    self.baddie = pygame.image.load(baddie)
 
-
-
-
-    #level1 = GameLevel(1, "Grinch end game.png", 'gremlin_baddie.png')
-    #level2=GameLevel(2, "night_sky.png", "bonlutin.png")
+    # level1 = GameLevel(1, "Grinch end game.png", 'gremlin_baddie.png')
+    # level2=GameLevel(2, "night_sky.png", "bonlutin.png")
     while True:  # The game loop runs while the game part is playing.
 
-
-
         score += 1  # Increase score.
-
         for event in pygame.event.get():
             if event.type == QUIT:
                 terminate()
@@ -183,7 +189,7 @@ while True:
         if moveDown and playerRect.bottom < WINDOWHEIGHT:
             playerRect.move_ip(0, PLAYERMOVERATE)
 
-        # Move the baddies to the left.
+        # Move the baddies down.
         for b in baddies:
             if not reverseCheat and not slowCheat:
                 b['rect'].move_ip(0, b['speed'])
@@ -192,19 +198,19 @@ while True:
             elif slowCheat:
                 b['rect'].move_ip(-1, 0)
 
-        # Delete baddies that have come from the right.
+        # Delete baddies that have come from the left.
         for b in baddies[:]:
             if b['rect'].left > WINDOWWIDTH:
                 baddies.remove(b)
 
         # Draw the game world on the window.
         windowSurface.fill(BACKGROUNDCOLOR)
-        #Set up the background
+        # Set up the background
         windowSurface.blit(gameBackground, (0, -100))
         # Draw the score and top score.
         drawText('Score: %s' % (score), font, windowSurface, 10, 0)
         drawText('Top Score: %s' % (topScore), font, windowSurface, 10, 40)
-
+        drawText('Lives: %s' % (lives), font, windowSurface, 10, 80)
         # Draw the player's rectangle.
         windowSurface.blit(playerImage, playerRect)
 
@@ -216,9 +222,15 @@ while True:
 
         # Check if any of the baddies have hit the player.
         if playerHasHitBaddie(playerRect, baddies):
-            if score > topScore:
-                topScore = score  # set new top score
-            break
+            for b in baddies:
+                baddies.remove(b)
+            lives -= 1  # 1 life is removed from the player
+            if lives > 0:  # the player keeps playing if she/he has more than 0 lives
+                continue
+            else:  # when the player has 0 lives the game stops
+                if score > topScore:
+                    topScore = score  # set new top score
+                break
 
         mainClock.tick(FPS)
 
@@ -229,7 +241,7 @@ while True:
 
     drawText('GAME OVER', font, windowSurface, (WINDOWWIDTH / 3), (WINDOWHEIGHT / 3))
     drawText('Press a key to retry', font, windowSurface, (WINDOWWIDTH / 3) - 45, (WINDOWHEIGHT / 3) + 50)
-    drawText('to save Christmas', font, windowSurface, (WINDOWWIDTH / 3) - 45,(WINDOWHEIGHT / 3) + 100)
+    drawText('to save Christmas', font, windowSurface, (WINDOWWIDTH / 3) - 45, (WINDOWHEIGHT / 3) + 100)
     pygame.display.update()
     waitForPlayerToPressKey()
 
