@@ -171,7 +171,7 @@ while True:
         if baddieAddCounter == ADDNEWBADDIERATE:
             baddieAddCounter = 0
             baddieSize = random.randint(BADDIEMINSIZE, BADDIEMAXSIZE)
-            newBaddie = {'rect': pygame.Rect(random.randint(0, WINDOWWIDTH - baddieSize), 0 - baddieSize, baddieSize,
+            newBaddie = {'rect': pygame.Rect(WINDOWWIDTH +40 - baddieSize, random.randint(0, WINDOWWIDTH - baddieSize), baddieSize,
                                              baddieSize),
                          'speed': random.randint(BADDIEMINSPEED, BADDIEMAXSPEED),
                          'surface': pygame.transform.scale(baddieImage, (baddieSize, baddieSize)),
@@ -192,7 +192,7 @@ while True:
         # Move the baddies down.
         for b in baddies:
             if not reverseCheat and not slowCheat:
-                b['rect'].move_ip(0, b['speed'])
+                b['rect'].move_ip(-b['speed'], 0)
             elif reverseCheat:
                 b['rect'].move_ip(5, 0)
             elif slowCheat:
@@ -221,12 +221,12 @@ while True:
         pygame.display.update()
 
         # Check if any of the baddies have hit the player.
-        if playerHasHitBaddie(playerRect, baddies):
+        if playerHasHitBaddie(playerRect, baddies) == True:
+            lives -= 1
             for b in baddies:
                 baddies.remove(b)
-            lives -= 1  # 1 life is removed from the player
             if lives > 0:  # the player keeps playing if she/he has more than 0 lives
-                continue
+                pass
             else:  # when the player has 0 lives the game stops
                 if score > topScore:
                     topScore = score  # set new top score
