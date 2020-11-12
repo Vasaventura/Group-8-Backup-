@@ -67,9 +67,9 @@ font = pygame.font.SysFont(None, 48, bold=True)
 
 # Set up sounds.
 gameOverSound = pygame.mixer.Sound('grinch_gameoversound.mp3')
-pygame.mixer.music.load('KatyPerry-CozyLittleChristmas.mp3')
+pygame.mixer.music.load('Katy Perry-CozyLittleChristmas.mp3')
 pygame.mixer.music.play(-1, 0.0)
-pygame.mixer.music.load('KatyPerry-CozyLittleChristmas.mp3')
+pygame.mixer.music.load('Katy Perry-CozyLittleChristmas.mp3')
 musicPlaying = True
 
 # Set up images.
