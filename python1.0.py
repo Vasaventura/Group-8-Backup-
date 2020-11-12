@@ -89,7 +89,6 @@ drawText('Press a key to start', font, windowSurface, (WINDOWWIDTH / 3) - 40, (W
 drawText('saving Christmas', font, windowSurface, (WINDOWWIDTH / 3) - 35, (WINDOWHEIGHT / 3) + 100)
 pygame.display.update()
 waitForPlayerToPressKey()
-pygame.display.flip()
 
 topScore = 0
 while True:
@@ -97,22 +96,16 @@ while True:
     baddies = []
     score = 0
     lives = 3  # The number of lives at the start of the game
+    level = 1 # We start with the first level
     playerRect.topleft = (WINDOWWIDTH / 2, WINDOWHEIGHT - 80)
     moveLeft = moveRight = moveUp = moveDown = False
     reverseCheat = slowCheat = False
     baddieAddCounter = 0  # ajout de baddies verticalement
     pygame.mixer.music.play(-1, 0.0)
-    # class GameLevel():
-    #  def __init__(self, level, background, baddie):
-    #     self.level = level
-    #     self.background = pygame.image.load(background)
-    #     self.gameBackground=windowSurface.blit(background, (0, 0))
-    #    self.baddie = pygame.image.load(baddie)
 
-    # level1 = GameLevel(1, "Grinch end game.png", 'gremlin_baddie.png')
-    # level2=GameLevel(2, "night_sky.png", "bonlutin.png")
+    #level1 = GameLevel(1, "winter_background.png", 'gremlin_baddie.png')
+    #level2=GameLevel(2, "night_sky.png", "bonlutin.png")
     while True:  # The game loop runs while the game part is playing.
-
         score += 1  # Increase score.
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -211,6 +204,8 @@ while True:
         drawText('Score: %s' % (score), font, windowSurface, 10, 0)
         drawText('Top Score: %s' % (topScore), font, windowSurface, 10, 40)
         drawText('Lives: %s' % (lives), font, windowSurface, 10, 80)
+        drawText('Level: %s' % (level), font, windowSurface, WINDOWWIDTH -150, 0)
+
         # Draw the player's rectangle.
         windowSurface.blit(playerImage, playerRect)
 
