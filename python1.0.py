@@ -13,7 +13,9 @@ BADDIEMINSIZE = 25  # ici le code a été modifié en suivant les conseils du li
 BADDIEMAXSIZE = 60  # la taille max de baddie
 BADDIEMINSPEED = 1  # la vitesse minimale d'ennemi
 BADDIEMAXSPEED = 4  # la vitesse maximale d'ennemi
-ADDNEWBADDIERATE = 12  # le taux de reproduction de nouveaux ennemis
+ADDNEWBADDIERATE = 24  # le taux de reproduction de nouveaux ennemis
+ADDNEWLUTINRATE=24 # le taux de reproduction de lutins
+LUTINSPEED=1
 PLAYERMOVERATE = 5  # la vitesse de déplacement de jouer
 
 
@@ -36,24 +38,22 @@ def waitForPlayerToPressKey():
 def playerHasHitBaddie(playerRect, baddies):
     for b in baddies:
         if playerRect.colliderect(b['rect']):
+            baddies.remove(b)
             return True
     return False
 
 
-# def playerHasHitLutin(playerRect, lutin):    #utile pour la collecte des lutins
-#    for l in lutins:
-#        if playerRect.colliderect(l['rect']):
-#           baddies.remove(l)
-#            scoreLutin += 1
-#            return True
-#    return False
+def playerHasHitLutin(playerRect, lutin):    #utile pour la collecte des lutins
+   for l in lutin:
+        if playerRect.colliderect(l['rect']):
+            lutin.remove(l)
+            return True
 
 def drawText(text, font, surface, x, y):
     textobj = font.render(text, 1, TEXTCOLOR)
     textrect = textobj.get_rect()
     textrect.topleft = (x, y)
     surface.blit(textobj, textrect)
-
 
 # Set up pygame, the window, and the mouse cursor.
 pygame.init()
@@ -78,8 +78,10 @@ playerImage = pygame.image.load('santa-player.png')
 # playerSize=pygame.transform.scale(playerImage, (10,80))
 playerRect = playerImage.get_rect()
 baddieImage = pygame.image.load('gremlin_baddie.png')
+lutinImage = pygame.image.load('bonlutin.png')
 
 gameBackground = pygame.image.load("winter_background.png")
+gameBackground_lvl2 = pygame.image.load("night_sky.png")
 gameOverBackground = pygame.image.load("Grinch end game.png")
 
 # Show the "Start" screen.
@@ -90,23 +92,24 @@ drawText('saving Christmas', font, windowSurface, (WINDOWWIDTH / 3) - 35, (WINDO
 pygame.display.update()
 waitForPlayerToPressKey()
 
-topScore = 0
+topLutinScore = 0
 while True:
     # Set up the start of the game.
     baddies = []
-    score = 0
+    lutin = []
+    scoreLutin = 0
     lives = 3  # The number of lives at the start of the game
-    level = 1 # We start with the first level
+    level = 1  # We start with the first level
     playerRect.topleft = (WINDOWWIDTH / 2, WINDOWHEIGHT - 80)
     moveLeft = moveRight = moveUp = moveDown = False
     reverseCheat = slowCheat = False
-    baddieAddCounter = 0  # ajout de baddies verticalement
+    baddieAddCounter = 0  # ajouter de baddies horizontalement
+    lutinAddCounter = 0  # ajouter des lutins horizontalement
     pygame.mixer.music.play(-1, 0.0)
 
-    #level1 = GameLevel(1, "winter_background.png", 'gremlin_baddie.png')
-    #level2=GameLevel(2, "night_sky.png", "bonlutin.png")
+    # level1 = GameLevel(1, "winter_background.png", 'gremlin_baddie.png')
+    # level2=GameLevel(2, "night_sky.png", "bonlutin.png")
     while True:  # The game loop runs while the game part is playing.
-        score += 1  # Increase score.
         for event in pygame.event.get():
             if event.type == QUIT:
                 terminate()
@@ -138,10 +141,10 @@ while True:
             if event.type == KEYUP:
                 if event.key == K_z:
                     reverseCheat = False
-                    score = 0
+                    scoreLutin = 0
                 if event.key == K_x:
                     slowCheat = False
-                    score = 0
+                    scoreLutin = 0
                 if event.key == K_ESCAPE:
                     terminate()
 
@@ -160,17 +163,32 @@ while True:
                 playerRect.centery = event.pos[1]
         # Add new baddies at the top of the screen, if needed.
         if not reverseCheat and not slowCheat:
+            lutinAddCounter += 1
             baddieAddCounter += 1
+
         if baddieAddCounter == ADDNEWBADDIERATE:
             baddieAddCounter = 0
             baddieSize = random.randint(BADDIEMINSIZE, BADDIEMAXSIZE)
-            newBaddie = {'rect': pygame.Rect(WINDOWWIDTH +40 - baddieSize, random.randint(0, WINDOWWIDTH - baddieSize), baddieSize,
+            newBaddie = {'rect': pygame.Rect(WINDOWWIDTH + 40 - baddieSize, random.randint(0, WINDOWWIDTH - baddieSize),
+                                             baddieSize,
                                              baddieSize),
                          'speed': random.randint(BADDIEMINSPEED, BADDIEMAXSPEED),
                          'surface': pygame.transform.scale(baddieImage, (baddieSize, baddieSize)),
                          }
 
             baddies.append(newBaddie)
+
+        if lutinAddCounter == ADDNEWLUTINRATE:
+            lutinAddCounter = 0
+            lutinSize = random.randint(BADDIEMINSIZE, BADDIEMAXSIZE)
+            newLutin = {'rect': pygame.Rect(WINDOWWIDTH + 40 - lutinSize, random.randint(0, WINDOWWIDTH - lutinSize),
+                                             lutinSize,
+                                             lutinSize),
+                         'speed': LUTINSPEED,
+                         'surface': pygame.transform.scale(lutinImage, (lutinSize, lutinSize)),
+                         }
+
+            lutin.append(newLutin)
 
         # Move the player around.
         if moveLeft and playerRect.left > 0:
@@ -182,7 +200,7 @@ while True:
         if moveDown and playerRect.bottom < WINDOWHEIGHT:
             playerRect.move_ip(0, PLAYERMOVERATE)
 
-        # Move the baddies down.
+        # Move the baddies to the left.
         for b in baddies:
             if not reverseCheat and not slowCheat:
                 b['rect'].move_ip(-b['speed'], 0)
@@ -196,15 +214,29 @@ while True:
             if b['rect'].left > WINDOWWIDTH:
                 baddies.remove(b)
 
+        # Move the lutins down.
+        for l in lutin:
+            if not reverseCheat and not slowCheat:
+                l['rect'].move_ip(-l['speed'], 0)
+            elif reverseCheat:
+                l['rect'].move_ip(-1, 0)
+            elif slowCheat:
+                l['rect'].move_ip(5, 0)
+
+        # Delete lutins that have come from the left.
+        for l in lutin[:]:
+            if l['rect'].left > WINDOWWIDTH:
+                lutin.remove(l)
+
         # Draw the game world on the window.
         windowSurface.fill(BACKGROUNDCOLOR)
         # Set up the background
         windowSurface.blit(gameBackground, (0, -100))
-        # Draw the score and top score.
-        drawText('Score: %s' % (score), font, windowSurface, 10, 0)
-        drawText('Top Score: %s' % (topScore), font, windowSurface, 10, 40)
+        # Draw the Lutin score and top score.
+        drawText('Number of Elves Caught: %s' % (scoreLutin), font, windowSurface, 10, 0)
+        drawText('Top Score: %s' % (topLutinScore), font, windowSurface, 10, 40)
         drawText('Lives: %s' % (lives), font, windowSurface, 10, 80)
-        drawText('Level: %s' % (level), font, windowSurface, WINDOWWIDTH -150, 0)
+        drawText('Level: %s' % (level), font, windowSurface, WINDOWWIDTH - 150, 0)
 
         # Draw the player's rectangle.
         windowSurface.blit(playerImage, playerRect)
@@ -213,7 +245,23 @@ while True:
         for b in baddies:
             windowSurface.blit(b['surface'], b['rect'])
 
+        # Draw each lutin.
+        for l in lutin:
+            windowSurface.blit(l['surface'], l['rect'])
+
         pygame.display.update()
+
+        # Check if any of the lutins have been collected by the player.
+        if playerHasHitLutin(playerRect, lutin) == True:
+            lutin.remove(l)
+            scoreLutin += 1
+            if scoreLutin >= 20:  # the player moves to the next level (for now the game stops)
+                topLutinScore = scoreLutin
+                break
+                #create method for levelling up
+            else:
+                continue
+
 
         # Check if any of the baddies have hit the player.
         if playerHasHitBaddie(playerRect, baddies) == True:
@@ -223,21 +271,28 @@ while True:
             if lives > 0:  # the player keeps playing if she/he has more than 0 lives
                 pass
             else:  # when the player has 0 lives the game stops
-                if score > topScore:
-                    topScore = score  # set new top score
+                if scoreLutin > topLutinScore:
+                    topLutinScore = scoreLutin  # set new top score
                 break
 
         mainClock.tick(FPS)
 
     # Stop the game and show the "Game Over" screen.
-    windowSurface.blit(gameOverBackground, (-850, 0))
-    pygame.mixer.music.stop()
-    gameOverSound.play()
+    if scoreLutin < 20:
+        windowSurface.blit(gameOverBackground, (-850, 0))
+        pygame.mixer.music.stop()
+        gameOverSound.play()
 
-    drawText('GAME OVER', font, windowSurface, (WINDOWWIDTH / 3), (WINDOWHEIGHT / 3))
-    drawText('Press a key to retry', font, windowSurface, (WINDOWWIDTH / 3) - 45, (WINDOWHEIGHT / 3) + 50)
-    drawText('to save Christmas', font, windowSurface, (WINDOWWIDTH / 3) - 45, (WINDOWHEIGHT / 3) + 100)
-    pygame.display.update()
-    waitForPlayerToPressKey()
+        drawText('GAME OVER', font, windowSurface, (WINDOWWIDTH / 3), (WINDOWHEIGHT / 3))
+        drawText('Press a key to retry', font, windowSurface, (WINDOWWIDTH / 3) - 45, (WINDOWHEIGHT / 3) + 50)
+        drawText('to save Christmas', font, windowSurface, (WINDOWWIDTH / 3) - 45, (WINDOWHEIGHT / 3) + 100)
+        pygame.display.update()
+        waitForPlayerToPressKey()
 
-    gameOverSound.stop()
+        gameOverSound.stop()
+    elif scoreLutin >= 20:
+        windowSurface.blit(gameBackground_lvl2, (-850, 0))
+        pygame.mixer.music.stop()
+        drawText("You WON!", font, windowSurface, (WINDOWWIDTH / 3)- 45, (WINDOWHEIGHT / 3))
+        pygame.display.update()
+        waitForPlayerToPressKey()
