@@ -9,12 +9,13 @@ BACKGROUNDCOLOR = (255, 255, 255)
 MENUBACKGROUNDCOLOR = ('red')
 # MenuGameBackground = pygame.image.load("snow.gif") #si vous voulez
 FPS = 60
-BADDIEMINSIZE = 25  # ici le code a été modifié en suivant les conseils du livre (Ai Swegart) Ch. 20, Pg. 353-354
-BADDIEMAXSIZE = 60  # la taille max de baddie
+MINSIZE = 30  # ici le code a été modifié en suivant les conseils du livre (Ai Swegart) Ch. 20, Pg. 353-354
+MEDSIZE = 45
+MAXSIZE = 60  # la taille max d'un caractere
 BADDIEMINSPEED = 1  # la vitesse minimale d'ennemi
 BADDIEMAXSPEED = 4  # la vitesse maximale d'ennemi
 ADDNEWBADDIERATE = 24  # le taux de reproduction de nouveaux ennemis
-ADDNEWLUTINRATE=24 # le taux de reproduction de lutins
+ADDNEWLUTINRATE=48 # le taux de reproduction de lutins
 LUTINSPEED=1
 PLAYERMOVERATE = 5  # la vitesse de déplacement de jouer
 
@@ -75,7 +76,7 @@ musicPlaying = True
 # Set up images.
 # LIVES = pygame.image.load('hp.png')
 playerImage = pygame.image.load('santa-player.png')
-# playerSize=pygame.transform.scale(playerImage, (10,80))
+
 playerRect = playerImage.get_rect()
 baddieImage = pygame.image.load('gremlin_baddie.png')
 lutinImage = pygame.image.load('bonlutin.png')
@@ -106,7 +107,6 @@ while True:
     baddieAddCounter = 0  # ajouter de baddies horizontalement
     lutinAddCounter = 0  # ajouter des lutins horizontalement
     pygame.mixer.music.play(-1, 0.0)
-
     # level1 = GameLevel(1, "winter_background.png", 'gremlin_baddie.png')
     # level2=GameLevel(2, "night_sky.png", "bonlutin.png")
     while True:  # The game loop runs while the game part is playing.
@@ -168,7 +168,7 @@ while True:
 
         if baddieAddCounter == ADDNEWBADDIERATE:
             baddieAddCounter = 0
-            baddieSize = random.randint(BADDIEMINSIZE, BADDIEMAXSIZE)
+            baddieSize = random.randint(MINSIZE, MAXSIZE)
             newBaddie = {'rect': pygame.Rect(WINDOWWIDTH + 40 - baddieSize, random.randint(0, WINDOWWIDTH - baddieSize),
                                              baddieSize,
                                              baddieSize),
@@ -180,7 +180,7 @@ while True:
 
         if lutinAddCounter == ADDNEWLUTINRATE:
             lutinAddCounter = 0
-            lutinSize = random.randint(BADDIEMINSIZE, BADDIEMAXSIZE)
+            lutinSize = random.randint(MINSIZE, MEDSIZE)
             newLutin = {'rect': pygame.Rect(WINDOWWIDTH + 40 - lutinSize, random.randint(0, WINDOWWIDTH - lutinSize),
                                              lutinSize,
                                              lutinSize),
@@ -253,7 +253,6 @@ while True:
 
         # Check if any of the lutins have been collected by the player.
         if playerHasHitLutin(playerRect, lutin) == True:
-            lutin.remove(l)
             scoreLutin += 1
             if scoreLutin >= 20:  # the player moves to the next level (for now the game stops)
                 topLutinScore = scoreLutin
@@ -293,6 +292,6 @@ while True:
     elif scoreLutin >= 20:
         windowSurface.blit(gameBackground_lvl2, (-850, 0))
         pygame.mixer.music.stop()
-        drawText("You WON!", font, windowSurface, (WINDOWWIDTH / 3)- 45, (WINDOWHEIGHT / 3))
+        drawText("You WON!", font, windowSurface, (WINDOWWIDTH / 3)+50, (WINDOWHEIGHT / 3))
         pygame.display.update()
         waitForPlayerToPressKey()
