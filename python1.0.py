@@ -68,9 +68,8 @@ font = pygame.font.SysFont(None, 48, bold=True)
 
 # Set up sounds.
 gameOverSound = pygame.mixer.Sound('grinch_gameoversound.mp3')
-pygame.mixer.music.load('Katy Perry-CozyLittleChristmas.mp3')
-pygame.mixer.music.play(-1, 0.0)
-pygame.mixer.music.load('Katy Perry-CozyLittleChristmas.mp3')
+BellsSound = pygame.mixer.Sound('Bells Sound effect.mp3')
+PresentSound = pygame.mixer.Sound('Present_sound.mp3')
 musicPlaying = True
 
 # Set up images.
@@ -78,11 +77,14 @@ musicPlaying = True
 playerImage = pygame.image.load('santa-player.png')
 
 playerRect = playerImage.get_rect()
-baddieImage = pygame.image.load('gremlin_baddie.png')
+baddieImage = pygame.image.load('gremlin.png')
+charbonImage = pygame.image.load('Charbon.png')
 lutinImage = pygame.image.load('bonlutin.png')
+cadeauImage = pygame.image.load('cadeau.png')
 
-gameBackground = pygame.image.load("winter_background.png")
-gameBackground_lvl2 = pygame.image.load("night_sky.png")
+gameBackground_lvl1 = pygame.image.load("winter_background.png")
+gameBackground_lvl2 = pygame.image.load("lvl_2.png")
+gameBackground_lvl3 = pygame.image.load("night_sky.png")
 gameOverBackground = pygame.image.load("Grinch end game.png")
 
 # Show the "Start" screen.
@@ -106,6 +108,7 @@ while True: #level 1
     reverseCheat = slowCheat = False
     baddieAddCounter = 0  # ajouter de baddies horizontalement
     lutinAddCounter = 0  # ajouter des lutins horizontalement
+    pygame.mixer.music.load('Jingle_Bells-Kevin_MacLeod.mp3')
     pygame.mixer.music.play(-1, 0.0)
     while True:  # The game loop runs while the game part is playing.
         for event in pygame.event.get():
@@ -229,7 +232,7 @@ while True: #level 1
         # Draw the game world on the window.
         windowSurface.fill(BACKGROUNDCOLOR)
         # Set up the background
-        windowSurface.blit(gameBackground, (0, -100))
+        windowSurface.blit(gameBackground_lvl1, (0, -100))
         # Draw the Lutin score and top score.
         drawText('Number of Elves Caught: %s' % (scoreLutin), font, windowSurface, 10, 0)
         drawText('Lives: %s' % (lives), font, windowSurface, 10, 40)
@@ -251,7 +254,7 @@ while True: #level 1
         # Check if any of the lutins have been collected by the player.
         if playerHasHitLutin(playerRect, lutin) == True:
             scoreLutin += 1
-            #todo feedback sonore
+            BellsSound.play()
             if scoreLutin >= 10:  # the player moves to the next level (for now the game stops)
                 break
                 #create method for levelling up
@@ -293,6 +296,7 @@ while True: #level 1
         drawText("You WON!", font, windowSurface, (WINDOWWIDTH / 3)+50, (WINDOWHEIGHT / 3))
         pygame.display.update()
         waitForPlayerToPressKey()
+        scoreLutin = 0
         while True: #lvl 2 of the game
             level += 1
             #Debug code
@@ -371,13 +375,13 @@ while True: #level 1
 
                 if baddieAddCounter == ADDNEWBADDIERATE:
                     baddieAddCounter = 0
-                    baddieSize = random.randint(MINSIZE, MAXSIZE)
+                    baddieSize = random.randint(MEDSIZE, MAXSIZE)
                     newBaddie = {
                         'rect': pygame.Rect(WINDOWWIDTH + 40 - baddieSize, random.randint(0, WINDOWWIDTH - baddieSize),
                                             baddieSize,
                                             baddieSize),
                         'speed': random.randint(BADDIEMINSPEED, BADDIEMAXSPEED),
-                        'surface': pygame.transform.scale(baddieImage, (baddieSize, baddieSize)),
+                        'surface': pygame.transform.scale(charbonImage, (baddieSize, baddieSize)),
                         }
 
                     baddies.append(newBaddie)
@@ -390,7 +394,7 @@ while True: #level 1
                                             lutinSize,
                                             lutinSize),
                         'speed': LUTINSPEED,
-                        'surface': pygame.transform.scale(lutinImage, (lutinSize, lutinSize)),
+                        'surface': pygame.transform.scale(cadeauImage, (lutinSize, lutinSize)),
                         }
 
                     lutin.append(newLutin)
@@ -458,7 +462,8 @@ while True: #level 1
                 # Check if any of the lutins have been collected by the player.
                 if playerHasHitLutin(playerRect, lutin) == True:
                     scoreCadeau += 1
-                    # todo feedback sonore
+                    PresentSound.play()
+
                     if scoreCadeau >= 10:  # the player moves to the next level
                         break
                     else:
@@ -476,7 +481,7 @@ while True: #level 1
                         # Stop the game and show the "Game Over" screen.
                 mainClock.tick(FPS)
 
-            if scoreLutin < 10:
+            if scoreCadeau < 10:
                 windowSurface.blit(gameOverBackground, (-850, 0))
                 pygame.mixer.music.stop()
                 gameOverSound.play()
@@ -491,14 +496,14 @@ while True: #level 1
                 gameOverSound.stop()
 
             # -----------------------------------------------------------------------------------------------------------------------
-            elif scoreLutin >= 10:  #level-up code to lvl 3
-                windowSurface.blit(gameBackground, (-850, 0))
+            elif scoreCadeau >= 10:  #level-up code to lvl 3
+                windowSurface.blit(gameBackground_lvl3, (-850, 0))
                 pygame.mixer.music.stop()
                 drawText("You WON!", font, windowSurface, (WINDOWWIDTH / 3) + 50, (WINDOWHEIGHT / 3))
                 drawText("Press key to play next level!", font, windowSurface, (WINDOWWIDTH / 3) -40, (WINDOWHEIGHT / 3) +50)
                 pygame.display.update()
                 waitForPlayerToPressKey()
-
+                scoreCadeau=0
                 while True:  # lvl 3 of the game
                     level += 1
                     # Debug code
@@ -515,6 +520,7 @@ while True: #level 1
                     reverseCheat = slowCheat = False
                     baddieAddCounter = 0  # ajouter de baddies horizontalement
                     lutinAddCounter = 0  # ajouter des lutins horizontalement
+                    pygame.mixer.music.load('Katy Perry-CozyLittleChristmas.mp3')
                     pygame.mixer.music.play(-1, 0.0)
                     while True:  # The game loop runs while the game part is playing.
                         for event in pygame.event.get():
@@ -642,7 +648,7 @@ while True: #level 1
                         # Draw the game world on the window.
                         windowSurface.fill(BACKGROUNDCOLOR)
                         # Set up the background
-                        windowSurface.blit(gameBackground, (0, -100))
+                        windowSurface.blit(gameBackground_lvl3, (0, -100))
                         # Draw the Lutin score and top score.
                         drawText('Number of Elves Caught: %s' % (scoreLutin), font, windowSurface, 10, 0)
                         drawText('Lives: %s' % (lives), font, windowSurface, 10, 40)
@@ -664,6 +670,7 @@ while True: #level 1
                         # Check if any of the lutins have been collected by the player.
                         if playerHasHitLutin(playerRect, lutin) == True:
                             scoreLutin += 1
+                            PresentSound.play()
                             # todo feedback sonore
                             if scoreLutin >= 10:  # the player moves to the next level
                                 break
@@ -699,7 +706,7 @@ while True: #level 1
 
                     # -----------------------------------------------------------------------------------------------------------------------
                     elif scoreLutin >= 10:  # End of the game
-                        windowSurface.blit(gameBackground, (-850, 0))
+                        windowSurface.blit(gameBackground_lvl1, (-850, 0))
                         pygame.mixer.music.stop()
                         drawText("Well Done!", font, windowSurface, (WINDOWWIDTH / 3) + 50, (WINDOWHEIGHT / 3))
                         drawText("You Won!", font, windowSurface, (WINDOWWIDTH / 3) + 50,
