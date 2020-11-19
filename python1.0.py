@@ -55,6 +55,7 @@ def drawText(text, font, surface, x, y):
     textrect.topleft = (x, y)
     surface.blit(textobj, textrect)
 
+
 # Set up pygame, the window, and the mouse cursor.
 pygame.init()
 mainClock = pygame.time.Clock()
@@ -92,7 +93,6 @@ drawText('saving Christmas', font, windowSurface, (WINDOWWIDTH / 3) - 35, (WINDO
 pygame.display.update()
 waitForPlayerToPressKey()
 
-topLutinScore = 0
 #todo set up pct score instead of absolute numbers
 while True: #level 1
     # Set up the start of the game.
@@ -232,8 +232,7 @@ while True: #level 1
         windowSurface.blit(gameBackground, (0, -100))
         # Draw the Lutin score and top score.
         drawText('Number of Elves Caught: %s' % (scoreLutin), font, windowSurface, 10, 0)
-        drawText('Top Score: %s' % (topLutinScore), font, windowSurface, 10, 40)
-        drawText('Lives: %s' % (lives), font, windowSurface, 10, 80)
+        drawText('Lives: %s' % (lives), font, windowSurface, 10, 40)
         drawText('Level: %s' % (level), font, windowSurface, WINDOWWIDTH - 150, 0)
 
         # Draw the player's rectangle.
@@ -254,7 +253,6 @@ while True: #level 1
             scoreLutin += 1
             #todo feedback sonore
             if scoreLutin >= 10:  # the player moves to the next level (for now the game stops)
-                topLutinScore = scoreLutin
                 break
                 #create method for levelling up
             else:
@@ -269,8 +267,6 @@ while True: #level 1
             if lives > 0:  # the player keeps playing if she/he has more than 0 lives
                 pass
             else:  # when the player has 0 lives the game stops
-                if scoreLutin > topLutinScore:
-                    topLutinScore = scoreLutin  # set new top score
                 break
 
         mainClock.tick(FPS)
@@ -298,12 +294,16 @@ while True: #level 1
         pygame.display.update()
         waitForPlayerToPressKey()
         while True: #lvl 2 of the game
+            level += 1
+            #Debug code
+            if lives <= 0:  #this code helps to debug the previous problems
+                break                  # when a player has less than 0 lives him/her back to the start of the game
+            elif level >= 4:  #this code is useful when the player has completed the game, he can restart from lvl 1
+                break
             # Set up the start of the game.
             baddies = []
             lutin = []
-            scoreLutin = 0
-            lives = lives  # The number of lives corresponds to the number of lives in the previous level
-            level = 1  # We start with the first level
+            scoreCadeau = 0
             playerRect.topleft = (WINDOWWIDTH / 2, WINDOWHEIGHT - 80)
             moveLeft = moveRight = moveUp = moveDown = False
             reverseCheat = slowCheat = False
@@ -344,10 +344,10 @@ while True: #level 1
                     if event.type == KEYUP:
                         if event.key == K_z:
                             reverseCheat = False
-                            scoreLutin = 0
+                            scoreCadeau = 0
                         if event.key == K_x:
                             slowCheat = False
-                            scoreLutin = 0
+                            scoreCadeau = 0
                         if event.key == K_ESCAPE:
                             terminate()
 
@@ -438,9 +438,8 @@ while True: #level 1
                 # Set up the background
                 windowSurface.blit(gameBackground_lvl2, (0, -100))
                 # Draw the Lutin score and top score.
-                drawText('Number of Elves Caught: %s' % (scoreLutin), font, windowSurface, 10, 0)
-                drawText('Top Score: %s' % (topLutinScore), font, windowSurface, 10, 40)
-                drawText('Lives: %s' % (lives), font, windowSurface, 10, 80)
+                drawText('Number of Presents Caught: %s' % (scoreCadeau), font, windowSurface, 10, 0)
+                drawText('Lives: %s' % (lives), font, windowSurface, 10, 40)
                 drawText('Level: %s' % (level), font, windowSurface, WINDOWWIDTH - 150, 0)
 
                 # Draw the player's rectangle.
@@ -458,12 +457,10 @@ while True: #level 1
 
                 # Check if any of the lutins have been collected by the player.
                 if playerHasHitLutin(playerRect, lutin) == True:
-                    scoreLutin += 1
+                    scoreCadeau += 1
                     # todo feedback sonore
-                    if scoreLutin >= 10:  # the player moves to the next level (for now the game stops)
-                        topLutinScore = scoreLutin
+                    if scoreCadeau >= 10:  # the player moves to the next level
                         break
-                        # create method for levelling up
                     else:
                         continue
 
@@ -475,8 +472,6 @@ while True: #level 1
                     if lives > 0:  # the player keeps playing if she/he has more than 0 lives
                         pass
                     else:  # when the player has 0 lives the game stops
-                        if scoreLutin > topLutinScore:
-                            topLutinScore = scoreLutin  # set new top score
                         break
                         # Stop the game and show the "Game Over" screen.
                 mainClock.tick(FPS)
@@ -503,13 +498,18 @@ while True: #level 1
                 drawText("Press key to play next level!", font, windowSurface, (WINDOWWIDTH / 3) -40, (WINDOWHEIGHT / 3) +50)
                 pygame.display.update()
                 waitForPlayerToPressKey()
+
                 while True:  # lvl 3 of the game
+                    level += 1
+                    # Debug code
+                    if lives <= 0:    # this code helps to debug the previous problems
+                        break         # when a player has less than 0 lives him/her back to the start of the game
+                    elif level >= 4:  # this code is useful when the player has completed the game, he can restart from lvl 1
+                        break         # this code in particular sends the player back to level 2
                     # Set up the start of the game.
                     baddies = []
                     lutin = []
                     scoreLutin = 0
-                    lives = lives  # The number of lives corresponds to the number of lives in the previous level
-                    level = 1  # We start with the first level
                     playerRect.topleft = (WINDOWWIDTH / 2, WINDOWHEIGHT - 80)
                     moveLeft = moveRight = moveUp = moveDown = False
                     reverseCheat = slowCheat = False
@@ -645,8 +645,7 @@ while True: #level 1
                         windowSurface.blit(gameBackground, (0, -100))
                         # Draw the Lutin score and top score.
                         drawText('Number of Elves Caught: %s' % (scoreLutin), font, windowSurface, 10, 0)
-                        drawText('Top Score: %s' % (topLutinScore), font, windowSurface, 10, 40)
-                        drawText('Lives: %s' % (lives), font, windowSurface, 10, 80)
+                        drawText('Lives: %s' % (lives), font, windowSurface, 10, 40)
                         drawText('Level: %s' % (level), font, windowSurface, WINDOWWIDTH - 150, 0)
 
                         # Draw the player's rectangle.
@@ -666,10 +665,8 @@ while True: #level 1
                         if playerHasHitLutin(playerRect, lutin) == True:
                             scoreLutin += 1
                             # todo feedback sonore
-                            if scoreLutin >= 10:  # the player moves to the next level (for now the game stops)
-                                topLutinScore = scoreLutin
+                            if scoreLutin >= 10:  # the player moves to the next level
                                 break
-                                # create method for levelling up
                             else:
                                 continue
 
@@ -681,8 +678,6 @@ while True: #level 1
                             if lives > 0:  # the player keeps playing if she/he has more than 0 lives
                                 pass
                             else:  # when the player has 0 lives the game stops
-                                if scoreLutin > topLutinScore:
-                                    topLutinScore = scoreLutin  # set new top score
                                 break
                                 # Stop the game and show the "Game Over" screen.
                         mainClock.tick(FPS)
