@@ -81,6 +81,7 @@ baddieImage = pygame.image.load('gremlin.png')
 charbonImage = pygame.image.load('Charbon.png')
 lutinImage = pygame.image.load('bonlutin.png')
 cadeauImage = pygame.image.load('cadeau.png')
+thundercloudImage = pygame.image.load('thundercloud.png')
 
 gameBackground_lvl1 = pygame.image.load("winter_background.png")
 gameBackground_lvl2 = pygame.image.load("lvl_2.png")
@@ -588,7 +589,7 @@ while True: #level 1
                                                     baddieSize,
                                                     baddieSize),
                                 'speed': random.randint(BADDIEMINSPEED, BADDIEMAXSPEED),
-                                'surface': pygame.transform.scale(baddieImage, (baddieSize, baddieSize)),
+                                'surface': pygame.transform.scale(thundercloudImage, (baddieSize, baddieSize)),
                             }
 
                             baddies.append(newBaddie)
