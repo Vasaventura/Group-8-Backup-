@@ -92,7 +92,9 @@ musicPlaying = True
 #lives.set_colorkey("BLACK") #todo set up lives image
 
 playerImage = pygame.image.load('santa-player.png')
-santaImage = pygame.image.load('Santa.png')
+santa_on_Sledge_Image = pygame.image.load('Santa.png')
+santa = pygame.transform.scale(santa_on_Sledge_Image, (144, 128))
+santaRect = santa.get_rect()
 
 playerRect = playerImage.get_rect()
 baddieImage = pygame.image.load('gremlin.png')
@@ -516,7 +518,7 @@ while True: #level 1
 
             # -----------------------------------------------------------------------------------------------------------------------
             elif scoreCadeau >= 3:  #level-up code to lvl 3
-                #playerRect = santaImage.get_rect()
+                santaRect
                 windowSurface.blit(gameBackground_lvl3, (-850, 0))
                 pygame.mixer.music.stop()
                 drawText("You WON!", font, windowSurface, (WINDOWWIDTH / 3) + 50, (WINDOWHEIGHT / 3))
@@ -535,7 +537,7 @@ while True: #level 1
                     baddies = []
                     lutin = []
                     scoreLutin = 0
-                    playerRect.topleft = (WINDOWWIDTH/2-300, WINDOWHEIGHT/2)
+                    santaRect.topleft = (WINDOWWIDTH/2-300, WINDOWHEIGHT/2)
                     moveLeft = moveRight = moveUp = moveDown = False
                     reverseCheat = slowCheat = False
                     baddieAddCounter = 0  # ajouter de baddies horizontalement
@@ -580,11 +582,11 @@ while True: #level 1
                                 if event.key == K_DOWN or event.key == K_s:
                                     moveDown = False
                                 if event.key == K_SPACE or event.key == MOUSEBUTTONUP: #send presents
-                                    playerRect.send()
+                                    santaRect.send()
 
                             if event.type == MOUSEMOTION:
                                 # If the mouse moves, move the player vertically with the cursor.
-                                playerRect.centery = event.pos[1]
+                                santaRect.centery = event.pos[1]
                         # Add new baddies at the top of the screen, if needed.
                         if not reverseCheat and not slowCheat:
                             lutinAddCounter += 1
@@ -619,10 +621,10 @@ while True: #level 1
                             lutin.append(newLutin)
 
                         # Move the player around vertically.
-                        if moveUp and playerRect.top > 0:
-                            playerRect.move_ip(0, -1 * PLAYERMOVERATE)
-                        if moveDown and playerRect.bottom < WINDOWHEIGHT:
-                            playerRect.move_ip(0, PLAYERMOVERATE)
+                        if moveUp and santaRect.top > 0:
+                            santaRect.move_ip(0, -1 * PLAYERMOVERATE)
+                        if moveDown and santaRect.bottom < WINDOWHEIGHT:
+                            santaRect.move_ip(0, PLAYERMOVERATE)
 
                         # Move the baddies to the left.
                         for b in baddies:
@@ -662,7 +664,7 @@ while True: #level 1
                         drawText('Level: %s' % (level), font, windowSurface, WINDOWWIDTH - 150, 0)
 
                         # Draw the player's rectangle.
-                        windowSurface.blit(playerImage, playerRect)
+                        windowSurface.blit(santa, santaRect) #santaImage
 
                         # Draw each baddie.
                         for b in baddies:
@@ -675,7 +677,7 @@ while True: #level 1
                         pygame.display.update()
 
                         # Check if any of the lutins have been collected by the player.
-                        if playerHasHitLutin(playerRect, lutin) == True:
+                        if playerHasHitLutin(santaRect, lutin) == True:
                             scoreLutin += 1
                             PresentSound.play()
                             # todo feedback sonore
@@ -685,7 +687,7 @@ while True: #level 1
                                 continue
 
                         # Check if any of the baddies have hit the player.
-                        if playerHasHitBaddie(playerRect, baddies) == True:
+                        if playerHasHitBaddie(santaRect, baddies) == True:
                             lives -= 1
                             for b in baddies:
                                 baddies.remove(b)
