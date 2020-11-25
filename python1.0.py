@@ -55,8 +55,22 @@ def drawText(text, font, surface, x, y):
     textrect.topleft = (x, y)
     surface.blit(textobj, textrect)
 
+# draw lives
+#def draw_lives(surf, x_l, y_l, max_health_l, img_l):
+    #for i in range(max_health_l):
+    #    img_rect = img_l.get_rect()
+    #    img_rect.x = x_l + 45 * i
+    #    img_rect.y = y_l
+    #    surf.blit(img_l, img_rect)
+# on garde les rectangles au cas où on veut remettre ça
+# def drawHealthMeter(currentHealth):
+# for i in range(MAXHEALTH):
+# pygame.draw.rect(windowSurface, RED, (870 + (10 * currentHealth) - i * 30, 35, 29, 10))
+# for i in range(currentHealth):
+# pygame.draw.rect(windowSurface, WHITE, (870 + (10 * currentHealth) - i * 30, 35, 29, 10), 1)
 
 # Set up pygame, the window, and the mouse cursor.
+
 pygame.init()
 mainClock = pygame.time.Clock()
 windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
@@ -73,8 +87,12 @@ PresentSound = pygame.mixer.Sound('Present_sound.mp3')
 musicPlaying = True
 
 # Set up images.
-# LIVES = pygame.image.load('hp.png')
+#livesImage = pygame.image.load('hp.png')
+#lives = pygame.transform.scale(livesImage, (100, 76))
+#lives.set_colorkey("BLACK") #todo set up lives image
+
 playerImage = pygame.image.load('santa-player.png')
+santaImage = pygame.image.load('Santa.png')
 
 playerRect = playerImage.get_rect()
 baddieImage = pygame.image.load('gremlin.png')
@@ -256,7 +274,7 @@ while True: #level 1
         if playerHasHitLutin(playerRect, lutin) == True:
             scoreLutin += 1
             BellsSound.play()
-            if scoreLutin >= 10:  # the player moves to the next level (for now the game stops)
+            if scoreLutin >= 3:  # the player moves to the next level (for now the game stops)
                 break
                 #create method for levelling up
             else:
@@ -276,7 +294,7 @@ while True: #level 1
         mainClock.tick(FPS)
 
     # Stop the game and show the "Game Over" screen.
-    if scoreLutin < 10:
+    if scoreLutin < 3:
         windowSurface.blit(gameOverBackground, (-850, 0))
         pygame.mixer.music.stop()
         gameOverSound.play()
@@ -291,7 +309,7 @@ while True: #level 1
 
  #-----------------------------------------------------------------------------------------------------------------------
 
-    elif scoreLutin >= 10:                  #level-up code to lvl 2
+    elif scoreLutin >= 3:                  #level-up code to lvl 2
         windowSurface.blit(gameBackground_lvl2, (-850, 0))
         pygame.mixer.music.stop()
         drawText("You WON!", font, windowSurface, (WINDOWWIDTH / 3)+50, (WINDOWHEIGHT / 3))
@@ -465,7 +483,7 @@ while True: #level 1
                     scoreCadeau += 1
                     PresentSound.play()
 
-                    if scoreCadeau >= 10:  # the player moves to the next level
+                    if scoreCadeau >= 3:  # the player moves to the next level
                         break
                     else:
                         continue
@@ -482,7 +500,7 @@ while True: #level 1
                         # Stop the game and show the "Game Over" screen.
                 mainClock.tick(FPS)
 
-            if scoreCadeau < 10:
+            if scoreCadeau < 3:
                 windowSurface.blit(gameOverBackground, (-850, 0))
                 pygame.mixer.music.stop()
                 gameOverSound.play()
@@ -497,7 +515,8 @@ while True: #level 1
                 gameOverSound.stop()
 
             # -----------------------------------------------------------------------------------------------------------------------
-            elif scoreCadeau >= 10:  #level-up code to lvl 3
+            elif scoreCadeau >= 3:  #level-up code to lvl 3
+                #playerRect = santaImage.get_rect()
                 windowSurface.blit(gameBackground_lvl3, (-850, 0))
                 pygame.mixer.music.stop()
                 drawText("You WON!", font, windowSurface, (WINDOWWIDTH / 3) + 50, (WINDOWHEIGHT / 3))
@@ -516,7 +535,7 @@ while True: #level 1
                     baddies = []
                     lutin = []
                     scoreLutin = 0
-                    playerRect.topleft = (WINDOWWIDTH / 2, WINDOWHEIGHT - 80)
+                    playerRect.topleft = (WINDOWWIDTH/2-300, WINDOWHEIGHT/2)
                     moveLeft = moveRight = moveUp = moveDown = False
                     reverseCheat = slowCheat = False
                     baddieAddCounter = 0  # ajouter de baddies horizontalement
@@ -532,12 +551,6 @@ while True: #level 1
                                     reverseCheat = True
                                 if event.key == K_x:
                                     slowCheat = True
-                                if event.key == K_LEFT or event.key == K_a:
-                                    moveRight = False
-                                    moveLeft = True
-                                if event.key == K_RIGHT or event.key == K_d:
-                                    moveLeft = False
-                                    moveRight = True
                                 if event.key == K_UP or event.key == K_w:
                                     moveDown = False
                                     moveUp = True
@@ -562,18 +575,15 @@ while True: #level 1
                                 if event.key == K_ESCAPE:
                                     terminate()
 
-                                if event.key == K_LEFT or event.key == K_a:
-                                    moveLeft = False
-                                if event.key == K_RIGHT or event.key == K_d:
-                                    moveRight = False
                                 if event.key == K_UP or event.key == K_w:
                                     moveUp = False
                                 if event.key == K_DOWN or event.key == K_s:
                                     moveDown = False
+                                if event.key == K_SPACE or event.key == MOUSEBUTTONUP: #send presents
+                                    playerRect.send()
 
                             if event.type == MOUSEMOTION:
-                                # If the mouse moves, move the player where to the cursor.
-                                playerRect.centerx = event.pos[0]
+                                # If the mouse moves, move the player vertically with the cursor.
                                 playerRect.centery = event.pos[1]
                         # Add new baddies at the top of the screen, if needed.
                         if not reverseCheat and not slowCheat:
@@ -603,16 +613,12 @@ while True: #level 1
                                                     lutinSize,
                                                     lutinSize),
                                 'speed': LUTINSPEED,
-                                'surface': pygame.transform.scale(lutinImage, (lutinSize, lutinSize)),
+                                'surface': pygame.transform.scale(cadeauImage, (lutinSize, lutinSize)),
                             }
 
                             lutin.append(newLutin)
 
-                        # Move the player around.
-                        if moveLeft and playerRect.left > 0:
-                            playerRect.move_ip(-1 * PLAYERMOVERATE, 0)
-                        if moveRight and playerRect.right < WINDOWWIDTH:
-                            playerRect.move_ip(PLAYERMOVERATE, 0)
+                        # Move the player around vertically.
                         if moveUp and playerRect.top > 0:
                             playerRect.move_ip(0, -1 * PLAYERMOVERATE)
                         if moveDown and playerRect.bottom < WINDOWHEIGHT:
@@ -651,7 +657,7 @@ while True: #level 1
                         # Set up the background
                         windowSurface.blit(gameBackground_lvl3, (0, -100))
                         # Draw the Lutin score and top score.
-                        drawText('Number of Elves Caught: %s' % (scoreLutin), font, windowSurface, 10, 0)
+                        drawText('Number of Presents delivered: %s' % (scoreLutin), font, windowSurface, 10, 0)
                         drawText('Lives: %s' % (lives), font, windowSurface, 10, 40)
                         drawText('Level: %s' % (level), font, windowSurface, WINDOWWIDTH - 150, 0)
 
@@ -673,7 +679,7 @@ while True: #level 1
                             scoreLutin += 1
                             PresentSound.play()
                             # todo feedback sonore
-                            if scoreLutin >= 10:  # the player moves to the next level
+                            if scoreLutin >= 3:  # the player moves to the next level
                                 break
                             else:
                                 continue
@@ -690,7 +696,7 @@ while True: #level 1
                                 # Stop the game and show the "Game Over" screen.
                         mainClock.tick(FPS)
 
-                    if scoreLutin < 10:
+                    if scoreLutin < 3:
                         windowSurface.blit(gameOverBackground, (-850, 0))
                         pygame.mixer.music.stop()
                         gameOverSound.play()
@@ -706,7 +712,7 @@ while True: #level 1
                         gameOverSound.stop()
 
                     # -----------------------------------------------------------------------------------------------------------------------
-                    elif scoreLutin >= 10:  # End of the game
+                    elif scoreLutin >= 3:  # End of the game
                         windowSurface.blit(gameBackground_lvl1, (-850, 0))
                         pygame.mixer.music.stop()
                         drawText("Well Done!", font, windowSurface, (WINDOWWIDTH / 3) + 50, (WINDOWHEIGHT / 3))
@@ -715,4 +721,4 @@ while True: #level 1
                         pygame.display.update()
                         waitForPlayerToPressKey()
 
-#todo lvl2 (present collection) + lvl3 (present distribution)
+#todo lvl3 (present distribution)
