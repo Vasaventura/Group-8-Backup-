@@ -16,6 +16,7 @@ BADDIEMINSPEED = 1  # la vitesse minimale d'ennemi
 BADDIEMAXSPEED = 4  # la vitesse maximale d'ennemi
 ADDNEWBADDIERATE = 24  # le taux de reproduction de nouveaux ennemis
 ADDNEWLUTINRATE=48 # le taux de reproduction de lutins
+ADDNEWCHIMNEYRATE=192 # le taux de reproduction de cheminees
 LUTINSPEED=1
 PLAYERMOVERATE = 5  # la vitesse de déplacement de jouer
 
@@ -92,8 +93,8 @@ musicPlaying = True
 #lives.set_colorkey("BLACK") #todo set up lives image
 
 playerImage = pygame.image.load('santa-player.png')
-santa_on_Sledge_Image = pygame.image.load('Santa.png')
-santa = pygame.transform.scale(santa_on_Sledge_Image, (144, 128))
+Santa_on_Sleigh_Image = pygame.image.load('Santa_on_sleigh.png')
+santa = pygame.transform.scale(Santa_on_Sleigh_Image, (152, 96))
 santaRect = santa.get_rect()
 
 playerRect = playerImage.get_rect()
@@ -102,6 +103,7 @@ charbonImage = pygame.image.load('Charbon.png')
 lutinImage = pygame.image.load('bonlutin.png')
 cadeauImage = pygame.image.load('cadeau.png')
 thundercloudImage = pygame.image.load('thundercloud.png')
+chimneyImage=pygame.image.load('chimney.png')
 
 gameBackground_lvl1 = pygame.image.load("winter_background.png")
 gameBackground_lvl2 = pygame.image.load("lvl_2.png")
@@ -535,12 +537,14 @@ while True: #level 1
                         break         # this code in particular sends the player back to level 2
                     # Set up the start of the game.
                     baddies = []
+                    chimneys = []
                     lutin = []
                     scoreLutin = 0
                     santaRect.topleft = (WINDOWWIDTH/2-300, WINDOWHEIGHT/2)
                     moveLeft = moveRight = moveUp = moveDown = False
                     reverseCheat = slowCheat = False
                     baddieAddCounter = 0  # ajouter de baddies horizontalement
+                    chimneyAddCounter = 0 #ajouter les cheminees en bas d'ecran
                     lutinAddCounter = 0  # ajouter des lutins horizontalement
                     pygame.mixer.music.load('Katy Perry-CozyLittleChristmas.mp3')
                     pygame.mixer.music.play(-1, 0.0)
@@ -591,13 +595,14 @@ while True: #level 1
                         if not reverseCheat and not slowCheat:
                             lutinAddCounter += 1
                             baddieAddCounter += 1
+                            chimneyAddCounter += 1
 
                         if baddieAddCounter == ADDNEWBADDIERATE:
                             baddieAddCounter = 0
                             baddieSize = random.randint(MINSIZE, MAXSIZE)
                             newBaddie = {
                                 'rect': pygame.Rect(WINDOWWIDTH + 40 - baddieSize,
-                                                    random.randint(0, WINDOWWIDTH - baddieSize),
+                                                    random.randint(0, WINDOWHEIGHT - baddieSize)-200,
                                                     baddieSize,
                                                     baddieSize),
                                 'speed': random.randint(BADDIEMINSPEED, BADDIEMAXSPEED),
@@ -605,6 +610,20 @@ while True: #level 1
                             }
 
                             baddies.append(newBaddie)
+
+                        if chimneyAddCounter == ADDNEWCHIMNEYRATE:
+                            chimneyAddCounter = 0
+                            chimneySize = random.randint(40, 200)
+                            newChimney = {
+                                'rect': pygame.Rect(WINDOWWIDTH,
+                                                    WINDOWHEIGHT - chimneySize + 8,
+                                                    chimneySize,
+                                                    chimneySize),
+                                'speed': LUTINSPEED,
+                                'surface': pygame.transform.scale(chimneyImage, (MEDSIZE, chimneySize)),
+                            }
+
+                            chimneys.append(newChimney)
 
                         if lutinAddCounter == ADDNEWLUTINRATE:
                             lutinAddCounter = 0
@@ -640,6 +659,21 @@ while True: #level 1
                             if b['rect'].left > WINDOWWIDTH:
                                 baddies.remove(b)
 
+                        # Move the baddies to the left.
+                        for c in chimneys:
+                            if not reverseCheat and not slowCheat:
+                                c['rect'].move_ip(-c['speed'], 0)
+                            elif reverseCheat:
+                                c['rect'].move_ip(5, 0)
+                            elif slowCheat:
+                                c['rect'].move_ip(-1, 0)
+
+                        # Delete baddies that have come from the left.
+                        for c in chimneys[:]:
+                            if c['rect'].left > WINDOWWIDTH:
+                                chimneys.remove(c)
+
+
                         # Move the lutins down.
                         for l in lutin:
                             if not reverseCheat and not slowCheat:
@@ -669,6 +703,10 @@ while True: #level 1
                         # Draw each baddie.
                         for b in baddies:
                             windowSurface.blit(b['surface'], b['rect'])
+
+                        # Draw each chimney.
+                        for c in chimneys:
+                            windowSurface.blit(c['surface'], c['rect'])
 
                         # Draw each lutin.
                         for l in lutin:
