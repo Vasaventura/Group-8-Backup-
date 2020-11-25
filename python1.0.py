@@ -101,6 +101,7 @@ gameOverSound = pygame.mixer.Sound('grinch_gameoversound.mp3')
 BellsSound = pygame.mixer.Sound('Bells Sound effect.mp3')
 PresentSound = pygame.mixer.Sound('Present_sound.mp3')
 PresentDelivered = pygame.mixer.Sound('presents_delivery.mp3')
+damageSound = pygame.mixer.Sound('damage.mp3')
 musicPlaying = True
 
 # Set up images.
@@ -304,6 +305,7 @@ while True: #level 1
         # Check if any of the baddies have hit the player.
         if playerHasHitBaddie(playerRect, baddies) == True:
             lives -= 1
+            damageSound.play()
             for b in baddies:
                 baddies.remove(b)
             if lives > 0:  # the player keeps playing if she/he has more than 0 lives
@@ -511,6 +513,7 @@ while True: #level 1
                 # Check if any of the baddies have hit the player.
                 if playerHasHitBaddie(playerRect, baddies) == True:
                     lives -= 1
+                    damageSound.play()
                     for b in baddies:
                         baddies.remove(b)
                     if lives > 0:  # the player keeps playing if she/he has more than 0 lives
@@ -704,6 +707,7 @@ while True: #level 1
                         # Check if any of the baddies have hit the player.
                         if playerHasHitBaddie(santaRect, baddies) == True:
                             lives -= 1
+                            damageSound.play()
                             for b in baddies:
                                 baddies.remove(b)
                             if lives > 0:  # the player keeps playing if she/he has more than 0 lives
