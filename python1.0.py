@@ -16,7 +16,7 @@ BADDIEMINSPEED = 1  # la vitesse minimale d'ennemi
 BADDIEMAXSPEED = 4  # la vitesse maximale d'ennemi
 ADDNEWBADDIERATE = 24  # le taux de reproduction de nouveaux ennemis
 ADDNEWLUTINRATE=48 # le taux de reproduction de lutins
-ADDNEWCHIMNEYRATE=192 # le taux de reproduction de cheminees
+ADDNEWCHIMNEYRATE=384 # le taux de reproduction de cheminees
 LUTINSPEED=1
 PLAYERMOVERATE = 5  # la vitesse de déplacement de jouer
 
@@ -55,10 +55,51 @@ def send_Gift(playerRect, chimneys, score, feedback_sound):
        if playerRect.colliderect(c['rect']):
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
+
                     if event.key == K_SPACE:
                         feedback_sound.play()
                         score += 1
                         c['rect'].move_ip(0, 1000)
+                        if event.key == K_z:
+                            reverseCheat = True
+                        if event.key == K_x:
+                            slowCheat = True
+                        if event.key == K_LEFT or event.key == K_a:
+                            moveRight = False
+                            moveLeft = True
+                        if event.key == K_RIGHT or event.key == K_d:
+                            moveLeft = False
+                            moveRight = True
+                        if event.key == K_UP or event.key == K_w:
+                            moveDown = False
+                            moveUp = True
+                        if event.key == K_DOWN or event.key == K_s:
+                            moveUp = False
+                            moveDown = True
+                            # option mute pour enlever le son du jeu. Par contre le son du Game Over reste toujours
+
+                        if event.type == KEYUP:
+                            if event.key == K_z:
+                                reverseCheat = False
+                                scoreLutin = 0
+                            if event.key == K_x:
+                                slowCheat = False
+                                scoreLutin = 0
+                            if event.key == K_ESCAPE:
+                                terminate()
+
+                            if event.key == K_LEFT or event.key == K_a:
+                                moveLeft = False
+                            if event.key == K_RIGHT or event.key == K_d:
+                                moveRight = False
+                            if event.key == K_UP or event.key == K_w:
+                                moveUp = False
+                            if event.key == K_DOWN or event.key == K_s:
+                                moveDown = False
+
+                        if event.type == MOUSEMOTION:
+                            # If the mouse moves, move the player where to the cursor.
+                            playerRect.centery = event.pos[1]
                         return True
                     else:
                         return False
