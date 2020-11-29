@@ -170,6 +170,7 @@ gameOverBackground = pygame.image.load("Grinch end game.png")
 
 # Show the "Start" screen.
 windowSurface.fill(MENUBACKGROUNDCOLOR)
+
 drawText('X-Mas Dodger', font, windowSurface, (WINDOWWIDTH / 3), (WINDOWHEIGHT / 3))
 drawText('Press a key to start', font, windowSurface, (WINDOWWIDTH / 3) - 40, (WINDOWHEIGHT / 3) + 50)
 drawText('saving Christmas', font, windowSurface, (WINDOWWIDTH / 3) - 35, (WINDOWHEIGHT / 3) + 100)
@@ -336,7 +337,7 @@ while True: #level 1
         if playerHasHitLutin(playerRect, lutin) == True:
             scoreLutin += 1
             BellsSound.play()
-            if scoreLutin >= 3:  # the player moves to the next level (for now the game stops)
+            if scoreLutin >= 10:  # the player moves to the next level (for now the game stops)
                 break
                 #create method for levelling up
             else:
@@ -357,7 +358,7 @@ while True: #level 1
         mainClock.tick(FPS)
 
     # Stop the game and show the "Game Over" screen.
-    if scoreLutin < 3:
+    if scoreLutin < 10:
         windowSurface.blit(gameOverBackground, (-850, 0))
         pygame.mixer.music.stop()
         gameOverSound.play()
@@ -372,10 +373,12 @@ while True: #level 1
 
  #-----------------------------------------------------------------------------------------------------------------------
 
-    elif scoreLutin >= 3:                  #level-up code to lvl 2
+    elif scoreLutin >= 10:                  #level-up code to lvl 2
         windowSurface.blit(gameBackground_lvl2, (-850, 0))
         pygame.mixer.music.stop()
-        drawText("You WON!", font, windowSurface, (WINDOWWIDTH / 3)+50, (WINDOWHEIGHT / 3))
+        drawText("You WON!", font, windowSurface, (WINDOWWIDTH / 3) + 20, (WINDOWHEIGHT / 3))
+        drawText("Press any key to start next level", font, windowSurface, (WINDOWWIDTH / 3) - 150,
+                 (WINDOWHEIGHT / 3) + 50)
         pygame.display.update()
         waitForPlayerToPressKey()
         scoreLutin = 0
@@ -546,7 +549,7 @@ while True: #level 1
                     scoreCadeau += 1
                     PresentSound.play()
 
-                    if scoreCadeau >= 3:  # the player moves to the next level
+                    if scoreCadeau >= 15:  # the player moves to the next level
                         break
                     else:
                         continue
@@ -564,7 +567,7 @@ while True: #level 1
                         # Stop the game and show the "Game Over" screen.
                 mainClock.tick(FPS)
 
-            if scoreCadeau < 3:
+            if scoreCadeau < 15:
                 windowSurface.blit(gameOverBackground, (-850, 0))
                 pygame.mixer.music.stop()
                 gameOverSound.play()
@@ -579,13 +582,22 @@ while True: #level 1
                 gameOverSound.stop()
 
             # -----------------------------------------------------------------------------------------------------------------------
-            elif scoreCadeau >= 3:  #level-up code to lvl 3
+            elif scoreCadeau >= 15:  #level-up code to lvl 3
                 santaRect
-                COOLDOWN = 100
                 windowSurface.blit(gameBackground_lvl3, (-850, 0))
                 pygame.mixer.music.stop()
-                drawText("You WON!", font, windowSurface, (WINDOWWIDTH / 3) + 50, (WINDOWHEIGHT / 3))
-                drawText("Press key to play next level!", font, windowSurface, (WINDOWWIDTH / 3) -40, (WINDOWHEIGHT / 3) +50)
+                drawText("You WON!", font, windowSurface, (WINDOWWIDTH / 3) + 20, (WINDOWHEIGHT / 3))
+                drawText("Press any key to start next level", font, windowSurface, (WINDOWWIDTH / 3) - 150,
+                         (WINDOWHEIGHT / 3) + 50)
+                drawText("GAME RULES FOR LEVEL 3:", font, windowSurface, (WINDOWWIDTH / 3) - 250,
+                         (WINDOWHEIGHT / 3) + 150)
+                drawText("In level 3 use only up and down controls", font, windowSurface, (WINDOWWIDTH / 3) - 250,
+                         (WINDOWHEIGHT / 3) + 200)
+                drawText("When approaching a chimney", font, windowSurface, (WINDOWWIDTH / 3) - 160,
+                         (WINDOWHEIGHT / 3) + 250)
+                drawText("to send presents quickly click SPACE", font, windowSurface, (WINDOWWIDTH / 3) - 220,
+                         (WINDOWHEIGHT / 3) + 300)
+
                 pygame.display.update()
                 waitForPlayerToPressKey()
                 scoreCadeau=0
@@ -653,7 +665,7 @@ while True: #level 1
                             baddieAddCounter += 1
                             chimneyAddCounter += 1
 
-                        if baddieAddCounter == ADDNEWBADDIERATE:
+                        if baddieAddCounter == 120:
                             baddieAddCounter = 0
                             baddieSize = random.randint(MINSIZE, MAXSIZE)
                             newBaddie = {
@@ -740,7 +752,7 @@ while True: #level 1
                         # Check if any of the lutins have been collected by the player.
                         if send_Gift(santaRect, chimneys, scoreCadeaux_livrés, PresentDelivered) == True:
                             scoreCadeaux_livrés += 1
-                            if scoreCadeaux_livrés >= 3:  # the player moves to the next level
+                            if scoreCadeaux_livrés >= 25:  # the player moves to the next level
                                 break
                             else:
                                 continue
@@ -758,7 +770,7 @@ while True: #level 1
                                 # Stop the game and show the "Game Over" screen.
                         mainClock.tick(FPS)
 
-                    if scoreCadeaux_livrés < 3:
+                    if scoreCadeaux_livrés < 25:
                         windowSurface.blit(gameOverBackground, (-850, 0))
                         pygame.mixer.music.stop()
                         gameOverSound.play()
@@ -774,11 +786,14 @@ while True: #level 1
                         gameOverSound.stop()
 
                     # -----------------------------------------------------------------------------------------------------------------------
-                    elif scoreCadeaux_livrés >= 3:  # End of the game
+                    elif scoreCadeaux_livrés >= 25:  # End of the game
                         windowSurface.blit(gameBackground_lvl1, (-850, 0))
                         pygame.mixer.music.stop()
-                        drawText("Well Done!", font, windowSurface, (WINDOWWIDTH / 3) + 50, (WINDOWHEIGHT / 3))
-                        drawText("You Won!", font, windowSurface, (WINDOWWIDTH / 3) + 50,
+                        drawText("Well Done!", font, windowSurface, (WINDOWWIDTH / 3) + 30, (WINDOWHEIGHT / 3))
+                        drawText("You have finished the game!", font, windowSurface, (WINDOWWIDTH / 3) -150,
                                  (WINDOWHEIGHT / 3) + 50)
+                        drawText("To restart press any key!", font, windowSurface, (WINDOWWIDTH / 3) -150,
+                                 (WINDOWHEIGHT / 3) + 100)
                         pygame.display.update()
                         waitForPlayerToPressKey()
+                        break
