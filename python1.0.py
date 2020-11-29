@@ -6,6 +6,7 @@ WINDOWHEIGHT = 800
 WIN = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
 TEXTCOLOR = ('white')
 BACKGROUNDCOLOR = (255, 255, 255)
+ENDGAMEBACKGROUNDCOLOR = ('black')
 MENUBACKGROUNDCOLOR = ('red')
 # MenuGameBackground = pygame.image.load("snow.gif") #si vous voulez
 FPS = 60
@@ -125,6 +126,34 @@ def drawText(text, font, surface, x, y):
 # pygame.draw.rect(windowSurface, RED, (870 + (10 * currentHealth) - i * 30, 35, 29, 10))
 # for i in range(currentHealth):
 # pygame.draw.rect(windowSurface, WHITE, (870 + (10 * currentHealth) - i * 30, 35, 29, 10), 1)
+
+# Set up pygame, the window, and the mouse cursor.
+#comment_jouer=pygame.image.load("comment_jouer.png")
+#howtoplay = pygame.transform.scale(comment_jouer, (200,35))
+#choix_Joueur=pygame.image.load("choisir_joueur.png")
+#choosePlayer=pygame.transform.scale(choix_Joueur,(200,35))
+
+# Show the "Start" screen.
+
+#Chargement image
+#menu = pygame.image.load("background_snow.png").convert()
+#chargingBackground = pygame.transform.scale(menu, (800, 800))
+#windowSurface.blit(chargingBackground, (0,0))
+#windowSurface.blit(howtoplay, (300,300))
+#windowSurface.blit(choosePlayer,(300,200))
+#pygame.display.flip()
+#pygame.display.update()
+
+#Boucle perpétuelle qui permet de garder la fenêtre ouverte
+#while True :
+    #for event in pygame.event.get():
+        #if event.type == QUIT :
+            #running = 0
+            #pygame.quit()
+            #exit()
+
+#pygame.display.update()
+#waitForPlayerTopPressKey()
 
 # Set up pygame, the window, and the mouse cursor.
 
@@ -312,8 +341,6 @@ while True: #level 1
             if l['rect'].left > WINDOWWIDTH:
                 lutin.remove(l)
 
-        # Draw the game world on the window.
-        windowSurface.fill(BACKGROUNDCOLOR)
         # Set up the background
         windowSurface.blit(gameBackground_lvl1, (0, -100))
         # Draw the Lutin score and top score.
@@ -375,7 +402,7 @@ while True: #level 1
  #-----------------------------------------------------------------------------------------------------------------------
 
     elif scoreLutin >= 10:                  #level-up code to lvl 2
-        windowSurface.blit(gameBackground_lvl2, (-850, 0))
+        windowSurface.fill(ENDGAMEBACKGROUNDCOLOR)
         pygame.mixer.music.stop()
         YaySound.play()
         drawText("You WON!", font, windowSurface, (WINDOWWIDTH / 3) + 20, (WINDOWHEIGHT / 3))
@@ -526,8 +553,6 @@ while True: #level 1
                     if l['rect'].left > WINDOWWIDTH:
                         lutin.remove(l)
 
-                # Draw the game world on the window.
-                windowSurface.fill(BACKGROUNDCOLOR)
                 # Set up the background
                 windowSurface.blit(gameBackground_lvl2, (0, -100))
                 # Draw the Lutin score and top score.
@@ -588,7 +613,7 @@ while True: #level 1
             # -----------------------------------------------------------------------------------------------------------------------
             elif scoreCadeau >= 15:  #level-up code to lvl 3
                 santaRect
-                windowSurface.blit(gameBackground_lvl3, (-850, 0))
+                windowSurface.fill(ENDGAMEBACKGROUNDCOLOR)
                 pygame.mixer.music.stop()
                 YaySound.play()
                 drawText("You WON!", font, windowSurface, (WINDOWWIDTH / 3) + 20, (WINDOWHEIGHT / 3))
@@ -600,8 +625,10 @@ while True: #level 1
                          (WINDOWHEIGHT / 3) + 200)
                 drawText("When approaching a chimney", font, windowSurface, (WINDOWWIDTH / 3) - 160,
                          (WINDOWHEIGHT / 3) + 250)
-                drawText("to send presents quickly click SPACE", font, windowSurface, (WINDOWWIDTH / 3) - 220,
+                drawText("to send presents", font, windowSurface, (WINDOWWIDTH / 3) - 120,
                          (WINDOWHEIGHT / 3) + 300)
+                drawText("quickly click on SPACE", font, windowSurface, (WINDOWWIDTH / 3) - 140,
+                         (WINDOWHEIGHT / 3) + 350)
 
                 pygame.display.update()
                 waitForPlayerToPressKey()
@@ -618,7 +645,7 @@ while True: #level 1
                     baddies = []
                     chimneys = []
                     scoreCadeaux_livrés = 0
-                    santaRect.topleft = (WINDOWWIDTH/2-300, WINDOWHEIGHT/2)
+                    santaRect.topleft = (WINDOWWIDTH/2-200, WINDOWHEIGHT/2)
                     moveLeft = moveRight = moveUp = moveDown = False
                     reverseCheat = slowCheat = False
                     baddieAddCounter = 0  # ajouter de baddies horizontalement
@@ -687,7 +714,7 @@ while True: #level 1
 
                         if chimneyAddCounter == ADDNEWCHIMNEYRATE:
                             chimneyAddCounter = 0
-                            chimneySize = random.randint(40, 700)
+                            chimneySize = random.randint(40, 750)
                             newChimney = {
                                 'rect': pygame.Rect(WINDOWWIDTH,
                                                     WINDOWHEIGHT - chimneySize + 8,
@@ -733,8 +760,6 @@ while True: #level 1
                             if c['rect'].left > WINDOWWIDTH:
                                 chimneys.remove(c)
 
-                        # Draw the game world on the window.
-                        windowSurface.fill(BACKGROUNDCOLOR)
                         # Set up the background
                         windowSurface.blit(gameBackground_lvl3, (0, -100))
                         # Draw the score, the number of lives remaining and the level of the game.
@@ -793,7 +818,7 @@ while True: #level 1
 
                     # -----------------------------------------------------------------------------------------------------------------------
                     elif scoreCadeaux_livrés >= 25:  # End of the game
-                        windowSurface.blit(gameBackground_lvl1, (-850, 0))
+                        windowSurface.fill(ENDGAMEBACKGROUNDCOLOR)
                         pygame.mixer.music.stop()
                         YaySound.play()
                         drawText("Well Done!", font, windowSurface, (WINDOWWIDTH / 3) + 30, (WINDOWHEIGHT / 3))
