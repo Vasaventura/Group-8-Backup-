@@ -398,6 +398,7 @@ while True: #level 1
             reverseCheat = slowCheat = False
             baddieAddCounter = 0  # ajouter de baddies horizontalement
             lutinAddCounter = 0  # ajouter des lutins horizontalement
+            pygame.mixer.music.load('Jingle_Bell_Rock_(Instrumental).mp3')
             pygame.mixer.music.play(-1, 0.0)
             # level1 = GameLevel(1, "winter_background.png", 'gremlin_baddie.png')
             # level2=GameLevel(2, "night_sky.png", "bonlutin.png")
