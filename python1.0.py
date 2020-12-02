@@ -17,8 +17,9 @@ BADDIEMINSPEED = 1  # la vitesse minimale d'ennemi
 BADDIEMAXSPEED = 4  # la vitesse maximale d'ennemi
 ADDNEWBADDIERATE = 24  # le taux de reproduction de nouveaux ennemis
 ADDNEWLUTINRATE=48 # le taux de reproduction de lutins
-ADDNEWCHIMNEYRATE=384 # le taux de reproduction de cheminees
+ADDNEWCHIMNEYRATE=316 # le taux de reproduction de cheminees
 LUTINSPEED=1
+CHIMNEYSPEED = 2
 PLAYERMOVERATE = 5  # la vitesse de déplacement de jouer
 
 
@@ -104,6 +105,51 @@ def send_Gift(playerRect, chimneys, score, feedback_sound):
                         return True
                     else:
                         return False
+
+def MouseControls(MOUSEMOTION):
+    if event.type == MOUSEMOTION:
+        # If the mouse moves, move the player where to the cursor.
+        playerRect.centerx = event.pos[0]
+        playerRect.centery = event.pos[1]
+
+def PlayerMouvement(playerRect):
+    # Move the player around.
+    if moveLeft and playerRect.left > 0:
+        playerRect.move_ip(-1 * PLAYERMOVERATE, 0)
+    if moveRight and playerRect.right < WINDOWWIDTH:
+        playerRect.move_ip(PLAYERMOVERATE, 0)
+    if moveUp and playerRect.top > 0:
+        playerRect.move_ip(0, -1 * PLAYERMOVERATE)
+    if moveDown and playerRect.bottom < WINDOWHEIGHT:
+        playerRect.move_ip(0, PLAYERMOVERATE)
+
+def bad_character_movement(objects,WINDOWWIDTH):
+    for o in objects:
+        if not reverseCheat and not slowCheat:
+            o['rect'].move_ip(-o['speed'], 0)
+        elif reverseCheat:
+            o['rect'].move_ip(5, 0)
+        elif slowCheat:
+            o['rect'].move_ip(-1, 0)
+
+    # Delete baddies that have come from the left.
+    for o in objects:
+        if o['rect'].left > WINDOWWIDTH:
+            objects.remove(o)
+def good_character_movement(objects,WINDOWWIDTH):
+        for o in objects:
+            if not reverseCheat and not slowCheat:
+                o['rect'].move_ip(-o['speed'], 0)
+            elif reverseCheat:
+                o['rect'].move_ip(-1, 0)
+            elif slowCheat:
+                o['rect'].move_ip(5, 0)
+
+        # Delete lutins that have come from the left.
+        for o in objects[:]:
+            if o['rect'].left > WINDOWWIDTH:
+                objects.remove(o)
+
 
 
 def drawText(text, font, surface, x, y):
@@ -270,10 +316,7 @@ while True: #level 1
                 if event.key == K_DOWN or event.key == K_s:
                     moveDown = False
 
-            if event.type == MOUSEMOTION:
-                # If the mouse moves, move the player where to the cursor.
-                playerRect.centerx = event.pos[0]
-                playerRect.centery = event.pos[1]
+            MouseControls(MOUSEMOTION)
         # Add new baddies at the top of the screen, if needed.
         if not reverseCheat and not slowCheat:
             lutinAddCounter += 1
@@ -282,12 +325,13 @@ while True: #level 1
         if baddieAddCounter == ADDNEWBADDIERATE:
             baddieAddCounter = 0
             baddieSize = random.randint(MINSIZE, MAXSIZE)
-            newBaddie = {'rect': pygame.Rect(WINDOWWIDTH + 40 - baddieSize, random.randint(0, WINDOWWIDTH - baddieSize),
-                                             baddieSize,
-                                             baddieSize),
-                         'speed': random.randint(BADDIEMINSPEED, BADDIEMAXSPEED),
-                         'surface': pygame.transform.scale(baddieImage, (baddieSize, baddieSize)),
-                         }
+            newBaddie = {
+                'rect': pygame.Rect(WINDOWWIDTH + 40 - baddieSize, random.randint(0, WINDOWWIDTH - baddieSize),
+                                    baddieSize,
+                                    baddieSize),
+                'speed': random.randint(BADDIEMINSPEED, BADDIEMAXSPEED),
+                'surface': pygame.transform.scale(baddieImage, (baddieSize, baddieSize)),
+            }
 
             baddies.append(newBaddie)
 
@@ -303,43 +347,13 @@ while True: #level 1
 
             lutin.append(newLutin)
 
-        # Move the player around.
-        if moveLeft and playerRect.left > 0:
-            playerRect.move_ip(-1 * PLAYERMOVERATE, 0)
-        if moveRight and playerRect.right < WINDOWWIDTH:
-            playerRect.move_ip(PLAYERMOVERATE, 0)
-        if moveUp and playerRect.top > 0:
-            playerRect.move_ip(0, -1 * PLAYERMOVERATE)
-        if moveDown and playerRect.bottom < WINDOWHEIGHT:
-            playerRect.move_ip(0, PLAYERMOVERATE)
-
+        #Move the player around
+        PlayerMouvement(playerRect)
         # Move the baddies to the left.
-        for b in baddies:
-            if not reverseCheat and not slowCheat:
-                b['rect'].move_ip(-b['speed'], 0)
-            elif reverseCheat:
-                b['rect'].move_ip(5, 0)
-            elif slowCheat:
-                b['rect'].move_ip(-1, 0)
+        bad_character_movement(baddies, WINDOWWIDTH)
 
-        # Delete baddies that have come from the left.
-        for b in baddies[:]:
-            if b['rect'].left > WINDOWWIDTH:
-                baddies.remove(b)
-
-        # Move the lutins down.
-        for l in lutin:
-            if not reverseCheat and not slowCheat:
-                l['rect'].move_ip(-l['speed'], 0)
-            elif reverseCheat:
-                l['rect'].move_ip(-1, 0)
-            elif slowCheat:
-                l['rect'].move_ip(5, 0)
-
-        # Delete lutins that have come from the left.
-        for l in lutin[:]:
-            if l['rect'].left > WINDOWWIDTH:
-                lutin.remove(l)
+        # Move the elves to the left.
+        good_character_movement(lutin, WINDOWWIDTH)
 
         # Set up the background
         windowSurface.blit(gameBackground_lvl1, (0, -100))
@@ -480,10 +494,7 @@ while True: #level 1
                         if event.key == K_DOWN or event.key == K_s:
                             moveDown = False
 
-                    if event.type == MOUSEMOTION:
-                        # If the mouse moves, move the player where to the cursor.
-                        playerRect.centerx = event.pos[0]
-                        playerRect.centery = event.pos[1]
+                    MouseControls(MOUSEMOTION)
                 # Add new baddies at the top of the screen, if needed.
                 if not reverseCheat and not slowCheat:
                     lutinAddCounter += 1
@@ -516,42 +527,13 @@ while True: #level 1
                     lutin.append(newLutin)
 
                 # Move the player around.
-                if moveLeft and playerRect.left > 0:
-                    playerRect.move_ip(-1 * PLAYERMOVERATE, 0)
-                if moveRight and playerRect.right < WINDOWWIDTH:
-                    playerRect.move_ip(PLAYERMOVERATE, 0)
-                if moveUp and playerRect.top > 0:
-                    playerRect.move_ip(0, -1 * PLAYERMOVERATE)
-                if moveDown and playerRect.bottom < WINDOWHEIGHT:
-                    playerRect.move_ip(0, PLAYERMOVERATE)
+                PlayerMouvement(playerRect)
 
-                # Move the baddies to the left.
-                for b in baddies:
-                    if not reverseCheat and not slowCheat:
-                        b['rect'].move_ip(-b['speed'], 0)
-                    elif reverseCheat:
-                        b['rect'].move_ip(5, 0)
-                    elif slowCheat:
-                        b['rect'].move_ip(-1, 0)
+                # Move the charcoal to the left.
+                bad_character_movement(baddies, WINDOWWIDTH)
 
-                # Delete baddies that have come from the left.
-                for b in baddies[:]:
-                    if b['rect'].left > WINDOWWIDTH:
-                        baddies.remove(b)
-
-                # Move the lutins down.
-                for l in lutin:
-                    if not reverseCheat and not slowCheat:
-                        l['rect'].move_ip(-l['speed'], 0)
-                    elif reverseCheat:
-                        l['rect'].move_ip(-1, 0)
-                    elif slowCheat:
-                        l['rect'].move_ip(5, 0)
-
-                # Delete lutins that have come from the left.
-                for l in lutin[:]:
-                    if l['rect'].left > WINDOWWIDTH:
-                        lutin.remove(l)
+                # Move the presents to the left.
+                good_character_movement(lutin, WINDOWWIDTH)
 
                 # Set up the background
                 windowSurface.blit(gameBackground_lvl2, (0, -100))
@@ -720,45 +702,20 @@ while True: #level 1
                                                     WINDOWHEIGHT - chimneySize + 8,
                                                     chimneySize,
                                                     chimneySize),
-                                'speed': LUTINSPEED,
+                                'speed': CHIMNEYSPEED,
                                 'surface': pygame.transform.scale(chimneyImage, (MEDSIZE, chimneySize)),
                             }
 
                             chimneys.append(newChimney)
 
-                        # Move the player around vertically.
-                        if moveUp and santaRect.top > 0:
-                            santaRect.move_ip(0, -1 * PLAYERMOVERATE)
-                        if moveDown and santaRect.bottom < WINDOWHEIGHT:
-                            santaRect.move_ip(0, PLAYERMOVERATE)
+                        # Move the player vertically.
+                        PlayerMouvement(santaRect)
 
                         # Move the baddies to the left.
-                        for b in baddies:
-                            if not reverseCheat and not slowCheat:
-                                b['rect'].move_ip(-b['speed'], 0)
-                            elif reverseCheat:
-                                b['rect'].move_ip(5, 0)
-                            elif slowCheat:
-                                b['rect'].move_ip(-1, 0)
+                        bad_character_movement(baddies, WINDOWWIDTH)
 
-                        # Delete baddies that have come from the left.
-                        for b in baddies[:]:
-                            if b['rect'].left > WINDOWWIDTH:
-                                baddies.remove(b)
-
-                        # Move the chimney to the left.
-                        for c in chimneys:
-                            if not reverseCheat and not slowCheat:
-                                c['rect'].move_ip(-c['speed'], 0)
-                            elif reverseCheat:
-                                c['rect'].move_ip(5, 0)
-                            elif slowCheat:
-                                c['rect'].move_ip(-1, 0)
-
-                        # Delete chimneys that have come from the left.
-                        for c in chimneys[:]:
-                            if c['rect'].left > WINDOWWIDTH:
-                                chimneys.remove(c)
+                        # Move the chimneys to the left.
+                        good_character_movement(chimneys, WINDOWWIDTH)
 
                         # Set up the background
                         windowSurface.blit(gameBackground_lvl3, (0, -100))
